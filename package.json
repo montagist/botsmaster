@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "async": "^2.3.0",
+    "compromise": "^9.1.0",
+    "irc": "^0.5.2",
+    "link-grammar": "0.0.9",
+    "lodash": "^4.17.4",
+    "minimist": "^1.2.0",
+    "speakeasy-nlp": "^0.2.12"
+  }
+}
