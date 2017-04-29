@@ -10,48 +10,27 @@ var seqManager = new convoSequence.SeqStateMachine( [
 	convoSequence.lwrCaseMatchBuilder( "i am first match" ),
 	convoSequence.lwrCaseMatchBuilder( "i am second match" ),
 	convoSequence.lwrCaseMatchBuilder( "i am third match" )
-], function() { console.log( "fin." ); } );
+], function() {
+
+	// TODO: bind msg to current scope/listener
+	// like how some web frameworks do
+	process.send( { type: "chat", 
+			to: "#rBotsTest",
+			msg: "Finished sequence matching test. All sequences matched." } );
+} );
 
 
 var commands = {
 
-	'!rec': function( meta, opts ) {
-	
-		var lbl = meta.user + (new Date()).getTime(),
-		    cmd = "./node_modules/ttystudio/bin/ttystudio";
-
-		var ttyRecProc = childProcess.spawn( cmd, [ lbl + ".gif", "--log" ] );	// TODO: Sanitize 
-
-		ttyRecProc.stdout.on('data', function(data) {
-			console.log('stdout: ', data);
-		});
-
-		ttyRecProc.stderr.on('data', function(data) {
-			console.log('stderr: ', data);
-		});
-
-		ttyRecProc.on('close', function(code) {
-			console.log('child process exited with code ', code);
-		});
-
-		console.log( ttyRecProc );
-		ttyRecProc.stdin.write( "irssi -c chat.freenode.net --nick " + lbl + "\n" );
-
-		setTimeout( function() {
-
-			ttyRecProc.stdin.write( "\x11" );
-
-		}, 10000 );
-	}
+	'!rec': function( meta, opts ) { }
 };
-
 
 
 process.on( "message", function ( msg ) {
 
 	var from = msg.from,
 	    to = msg.to,
-	    message = msg.message || "";
+	    message = msg.msg || "";
 
 	console.log( msg, from + ' => ' + to + ': ' + message );
 
@@ -59,7 +38,7 @@ process.on( "message", function ( msg ) {
 
 		var minOpts = minimist( message.toLowerCase().split(" ") );
 
-		console.log( minOpts['_'][0], !!commands[ minOpts['_'][ 0 ] ]  );
+		console.log( minOpts['_'][0], !!commands[ minOpts['_'][ 0 ] ] );
 
 		if ( commands[ minOpts['_'][ 0 ] ] ) {
 		
