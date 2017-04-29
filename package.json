@@ -1,12 +1,12 @@
 {
   "dependencies": {
     "async": "^2.3.0",
-    "compromise": "^9.1.0",
+    "colors": "^1.1.2",
+    "forkie": "^1.2.8",
     "irc": "^0.5.2",
-    "link-grammar": "0.0.9",
     "lodash": "^4.17.4",
     "minimist": "^1.2.0",
-    "speakeasy-nlp": "^0.2.12",
+    "pigeonkeeper": "^0.10.11",
     "ttystudio": "0.0.16",
     "vantage": "^1.7.0"
   }
