@@ -7,14 +7,16 @@ function SlackConnector( opts ) {
 	var defConfig = {
 			  // Slack specific options
 			  // Our additional options
-			  nick:		'tunnelbot',
+			  nick:	'tunnelbot',
 			  token:	process.env.SLACK_API_TOKEN || ''
 			};
 
+	var scope = this;
 	this.service = "slack";
 	this.client = null;
 	this.opts = _.extend( defConfig, opts );
 	this.channel2Id = {};
+	this.entity2Id = {};
 
 	this.init = function( msgProcessSlot ) {
 	
@@ -25,14 +27,29 @@ function SlackConnector( opts ) {
 			
 			console.log( "slack msg: ", msg );
 
-			msgProcessSlot( genMsg( msg.user, conn.opts.nick, msg.text, "chat" ) );
+			msgProcessSlot( genMsg( conn.id2Entity[ msg.user ],
+						conn.opts.nick,
+						msg.text, "chat" ) );
 		};		
 
 		this.client.on( slack.CLIENT_EVENTS.RTM.AUTHENTICATED, function( rtmStartData ) {
 
+			// mapping names to their ids
+			rtmStartData.bots.map( function( b ) {
+				conn.entity2Id[ b.name ] = b.id;	
+			} );
+
+			rtmStartData.users.map( function( u ) {
+				conn.entity2Id[ u.name ] = u.id;
+			} );
+
 			rtmStartData.channels.map( function( c ) {
-				conn.channel2Id[ c.name ] = channel = c.id;
+				conn.channel2Id[ "#"+c.name ] = c.id;
   			} );
+
+			// ...and vice versa
+			conn.id2Entity = _.invert( conn.entity2Id );
+			conn.id2Channel = _.invert( conn.channel2Id );
 		} );
 
 		this.client.on( slack.RTM_EVENTS.MESSAGE, msgHand );
@@ -49,7 +66,8 @@ function SlackConnector( opts ) {
 				to: to,
 				msg: msg,
 				type: type,
-				serv: this.service };
+				serv: scope.service,
+				nick: scope.opts.nick };
 
 		return theMsg;
 	}
