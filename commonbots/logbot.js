@@ -18,6 +18,7 @@ console.error = console.log;
 process.on( "message", function( m ) {
 
 	if ( m.serv )
-		console.log( "[ " + m.serv + " ] " + m.from + " -> " + m.to + ": " + m.msg );
+		console.log( (new Date()).getTime() + " [ " + m.serv +
+			     " ] " + m.from + " -> " + m.to + ": " + m.msg );
 } );
 
