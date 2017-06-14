@@ -32,7 +32,7 @@ function IRCConnector( opts ) {
 	this.init = function( msgProcessSlot ) {
 	
 		this.client = new irc.Client( this.opts.server, this.opts.nick, this.opts );
-		this.client.addListener( "message", function ( from, to, msg ) {
+		this.client.addListener( "message#", function ( from, to, msg ) {
 
 			msgProcessSlot( genMsg( from, to, msg, "chat" ) );
 		} );
