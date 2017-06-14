@@ -1,16 +1,6 @@
 var forkie = require('forkie');
 var Master = require('./patched_master.js');
 
-var IRCConnector = require( './serviceConnectors/IRC' );
-var ircClient = new IRCConnector( { channels: ['#rBotsTest'],
-				    nick: "adibot" } );
-
-var SlackConnector = require( './serviceConnectors/Slack' );
-var slackClient = new SlackConnector();
-
-var connectors = [ ircClient, slackClient ],
-    botfiles = [ "botfile.js" ];
-
 function BotsMaster( connectors, botfiles ) {
 
 	var scope = this;
@@ -23,7 +13,7 @@ function BotsMaster( connectors, botfiles ) {
 
 		scope.masterProc.forks.map( function( fork ) {
 			// TODO: regex keying against workers
-			forks.send( msg );
+			fork.send( msg );
 		} );
 	};
 
@@ -38,7 +28,14 @@ function BotsMaster( connectors, botfiles ) {
 		conn.init( msgPass2Workers );
 	} ); 
 
+	var workerStartedCount = 0;
+
 	this.masterProc.on('worker started', function() {
+
+		workerStartedCount++;
+
+		if ( workerStartedCount < botfiles.length )
+			return;
 
 		var msgFromWorkerHandler = function( msg ) {  
 
@@ -69,7 +66,5 @@ function BotsMaster( connectors, botfiles ) {
 		}
 	} );
 }
-
-var bm = new BotsMaster( connectors, botfiles );
 
 module.exports = BotsMaster;

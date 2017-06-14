@@ -4,6 +4,8 @@ var _ = require( "lodash" );
 
 function IRCConnector( opts ) {
 
+	var scope = this;
+
 	var defConfig = {
 			  // IRC specific options
 			  channels: 	[''],
@@ -30,21 +32,14 @@ function IRCConnector( opts ) {
 	this.init = function( msgProcessSlot ) {
 	
 		this.client = new irc.Client( this.opts.server, this.opts.nick, this.opts );
-
-		var conn = this;
-
 		this.client.addListener( "message", function ( from, to, msg ) {
-
-			console.log( "irc -> " + from + ' => ' + to + ': ' + msg );
 
 			msgProcessSlot( genMsg( from, to, msg, "chat" ) );
 		} );
 
 		this.client.addListener( "pm", function( from, msg ) {
 
-			console.log( from + ' => ' + msg );
-
-			msgProcessSlot( genMsg( from, conn.opts.nick, msg, "pm" ) );
+			msgProcessSlot( genMsg( from, scope.opts.nick, msg, "pm" ) );
 		} );
 
 		return this.client;
@@ -56,7 +51,7 @@ function IRCConnector( opts ) {
 				to: to,
 				msg: msg,
 				type: type,
-				serv: this.service };
+				serv: scope.service };
 
 		return theMsg;
 	}

@@ -9,6 +9,6 @@
     "minimist": "^1.2.0",
     "pigeonkeeper": "^0.10.11",
     "ttystudio": "0.0.16",
-    "vantage": "^1.7.0"
+    "vantage": "^1.7.0",
   }
 }
