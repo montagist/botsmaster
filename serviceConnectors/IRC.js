@@ -17,7 +17,8 @@ function IRCConnector( opts ) {
 			  port: 	6697,
 			  messageSplit:	512,
 			  nick:		'adiTun201',	// IRC-SASL
-			  //userName:	'',
+			  userName:	'adi',
+			  realName:	'adi',
 			  //password:	'',
 			  //sasl:		false,
 			  // Our additional options
