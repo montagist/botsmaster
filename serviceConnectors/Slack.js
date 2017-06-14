@@ -24,12 +24,14 @@ function SlackConnector( opts ) {
 
 		var conn = this,
 		    msgHand = function( msg ) {
-			
-			console.log( "slack msg: ", msg );
-
+		
+			var msgType = msg.channel.substr( 0, 1 ) === 'D' ? 'pm' : 'chat',
+			    toTarget = msgType === 'pm' ? conn.opts.nick : conn.id2Channel[ msg.channel ];
+	
 			msgProcessSlot( genMsg( conn.id2Entity[ msg.user ],
-						conn.opts.nick,
-						msg.text, "chat" ) );
+						toTarget,
+						msg.text,
+						msgType ) );
 		};		
 
 		this.client.on( slack.CLIENT_EVENTS.RTM.AUTHENTICATED, function( rtmStartData ) {
