@@ -9,13 +9,13 @@ Because you shouldn't be calling your framework anything similar to Botsmaster i
 [![Botsmaster Intro](https://img.youtube.com/vi/LLKYOSiW7U4/0.jpg)](https://www.youtube.com/watch?v=LLKYOSiW7U4)
 
 
-But also, because I came up with this name and started thinking of the features before I noticed those other guys. Got really excited that it already existed, but found it wasn't really what I wanted and actually seemed a little over-engineered. Also it's got like 9 chat service adapters and that not a single one is for IRC. I could just write one but I consider it's lacking that that too bad of a smell to seriously do it
+But also, because I came up with this name and started thinking of the features before I noticed those other guys. Got really excited that it already existed, but found it wasn't really what I wanted and actually seemed a little over-engineered. and not in total alignment with what I'd in mind. Also it's got like 9 chat service adapters and that not a single one is for IRC. I could just write one but I consider it's lacking that too bad of a smell to take it seriously. The youngins. 
 
 
 ## Features TODO
 
-- [ ] Child -> Master messages to chat
-    - [ ] How to specify the intended chat service?
+- [x] Child -> Master messages to chat
+    - [x] How to specify the intended chat service?
     - [ ] What about actions outside of chat data (joining, leaving, etc)?
 - [ ] Implement Plugins and Middleware
     - [ ] Middleware (& 2-3 important services through it)
