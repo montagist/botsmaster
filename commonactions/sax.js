@@ -21,7 +21,7 @@ var commands = {
 		var acceptUsers = cmdUsers;
 
 		var userValid = acceptUsers.some( function( el ) {
-			return el.toLowerCase() === meta.user.toLowerCase();
+			return el.toLowerCase() === meta.from.toLowerCase();
 		} );
 
 		if ( userValid && opts.to && opts.serv ) {
@@ -32,6 +32,22 @@ var commands = {
 					serv: opts.serv,
 					msg: opts._.join(" ") } ); 	
 		}
+	},
+
+	'!tail': function( initiatorMsg, opts ) {
+
+		process.on( "message", function( msg ) {
+
+			if ( msg.serv == opts.serv && msg.to == opts.to ) {
+
+				var xServMsg ="["+msg.serv+"] "+msg.from+"->"						    +msg.to+": "+msg.msg;
+
+				process.send( { type: "chat",
+						to: initiatorMsg.to,
+						serv: initiatorMsg.serv,
+						msg: xServMsg } );
+			}
+		} );
 	}
 };
 
@@ -50,7 +66,7 @@ process.on( "message", function ( msg ) {
 		if ( commands[ minOpts._[ 0 ] ] ) {
 		
 			var theCmd = commands[ minOpts._[ 0 ] ] ;
-			theCmd( { 'user': from }, minOpts );
+			theCmd( msg, minOpts );
 		}
 	}
 
