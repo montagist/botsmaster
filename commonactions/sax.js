@@ -38,6 +38,9 @@ var commands = {
 
 		process.on( "message", function( msg ) {
 
+			if ( !msg.from || !msg.msg )
+				return;	// skipping meta slack msgs
+
 			if ( msg.serv == opts.serv && msg.to == opts.to ) {
 
 				var xServMsg ="["+msg.serv+"] "+msg.from+"->"						    +msg.to+": "+msg.msg;
