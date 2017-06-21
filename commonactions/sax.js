@@ -41,9 +41,11 @@ var commands = {
 			if ( !msg.from || !msg.msg )
 				return;	// skipping meta slack msgs
 
-			if ( msg.serv == opts.serv && msg.to == opts.to ) {
+			if ( msg.serv.toLowerCase() == opts.serv.toLowerCase() &&
+			     msg.to.toLowerCase() == opts.to.toLowerCase() ) {
 
-				var xServMsg ="["+msg.serv+"] "+msg.from+"->"						    +msg.to+": "+msg.msg;
+				var xServMsg ="["+msg.serv+"] "+msg.from+"->"
+						+msg.to+": "+msg.msg;
 
 				process.send( { type: "chat",
 						to: initiatorMsg.to,
