@@ -1,4 +1,4 @@
-var Twitter = require( "twitter" );
+var Twit = require( "twit" );
 var _ = require( "lodash" );
 
 
@@ -10,7 +10,7 @@ function TwitterConnector( opts ) {
 			  // Twitter specific options
 			  consumer_key: process.env.TWITTER_CONSUMER_KEY || '',
 			  consumer_secret: process.env.TWITTER_CONSUMER_SECRET || '',
-			  access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY || '',
+			  access_token: process.env.TWITTER_ACCESS_TOKEN_KEY || '',
 			  access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET || ''
 			  // Our additional options
 			};
@@ -18,21 +18,22 @@ function TwitterConnector( opts ) {
 	this.service = "twitter";
 	this.client = null;
 	this.opts = _.extend( defConfig, opts );
+	this.streams = {};
 
 	this.init = function( msgProcessSlot ) {
 	
-		this.client = new Twitter( this.opts );
+		this.client = new Twit( this.opts );
 /*
 		this.client.addListener( "message#", function ( from, to, msg ) {
 
 			msgProcessSlot( genMsg( from, to, msg, "chat" ) );
 		} );
-
-		this.client.addListener( "pm", function( from, msg ) {
-
-			msgProcessSlot( genMsg( from, scope.opts.nick, msg, "pm" ) );
-		} );
 */
+
+		//msgProcessSlot( genMsg( from, scope.opts.nick, msg, "pm" ) );
+
+		this.client.stream( 'user' ).on( 'message', function() { console.log( arguments ); } );
+
 		return this.client;
 	};
 
@@ -47,18 +48,18 @@ function TwitterConnector( opts ) {
 		return theMsg;
 	}
 
-	this.streams = {};
 
 	this.join = function( channel, cb ) {
 
 		this.streams[ channel ] =
 		this.client.stream( 'statuses/filter',
-				    { track: 'twitter' },
-				    function(stream) {
+				    { track: channel },
+				    function( stream ) {
 					stream.on('data', function(tweet) {
 						console.log(tweet);
 					});
 				    } );
+		if ( cb ) cb();
 	};
 
 	this.say = function( to, msg ) {
@@ -72,7 +73,13 @@ function TwitterConnector( opts ) {
 
 	this.pm = function( to, msg ) {
 
-		this.client.ctcp( to, "privmsg", msg );
+		this.client.post( 'direct_messages/new',
+				  { screen_name: to,
+				    text: msg },
+				  function( err, msg, resp ) {
+
+					console.log( arguments );	
+				  } );
 	};
 
 	this.leave = function( channel, partMsg, cb ) {

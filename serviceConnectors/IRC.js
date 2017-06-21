@@ -16,10 +16,10 @@ function IRCConnector( opts ) {
 			  showErrors: 	true,
 			  port: 	6697,
 			  messageSplit:	512,
-			  nick:		'adiTun201',	// IRC-SASL
-			  userName:	'adi',
-			  realName:	'adi',
-			  //password:	'',
+			  nick:		'somenickname',	// IRC-SASL
+			  userName:	'somename',
+			  realName:	'somename',
+			  password:	process.env.IRC_PASSWORD,
 			  //sasl:		false,
 			  // Our additional options
 			  server:	'chat.freenode.net',

@@ -9,7 +9,7 @@ var TwitterConnector = require( './serviceConnectors/Twitter' );
 var twitterClient = new TwitterConnector();
 
 var connectors = [ ircClient, slackClient ],
-    botfiles = [ "./commonbots/logbot.js", "examplebot.js" ];
+    botfiles = [ "./commonactions/logbot.js", "examplebot.js" ];
 
 var BotsMaster = require('./BotsMaster');
 var bm = new BotsMaster( connectors, botfiles );
