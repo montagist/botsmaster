@@ -1,5 +1,6 @@
 var forkie = require('forkie');
 var minimist = require('minimist');
+var _ = require('lodash');
 
 const BOT_TITLE = "Sax";
 const CMD_DELIM = "!";
@@ -12,6 +13,8 @@ var workOpts = { start: function(c){ setTimeout( c, 3000 ); },
 		 stop:  function(c){ setTimeout( c, 1500 ); } };
 
 var worker = forkie.worker( BOT_TITLE, workOpts );
+
+var activeTrails = {};
 
 var commands = {
 
@@ -36,23 +39,35 @@ var commands = {
 
 	'!tail': function( initiatorMsg, opts ) {
 
-		process.on( "message", function( msg ) {
+		var tailKey = opts.serv.toLowerCase() + ":" +
+			      opts.to.toLowerCase();
 
-			if ( !msg.from || !msg.msg )
-				return;	// skipping meta slack msgs
+		if ( !activeTrails[ tailKey ] ) {
 
-			if ( msg.serv.toLowerCase() == opts.serv.toLowerCase() &&
-			     msg.to.toLowerCase() == opts.to.toLowerCase() ) {
+			activeTrails[ tailKey ] = { initiatorMsg: initiatorMsg,
+						    opts: opts };
+		} else if ( activeTrails[ tailKey ] && opts.kill ) {
 
-				var xServMsg ="["+msg.serv+"] "+msg.from+"->"
-						+msg.to+": "+msg.msg;
+			delete activeTrails[ tailKey ];
+		}
+	}
+};
 
-				process.send( { type: "chat",
-						to: initiatorMsg.to,
-						serv: initiatorMsg.serv,
-						msg: xServMsg } );
-			}
-		} );
+var transMessage = function( msg, config ) {
+
+	if ( !msg.from || !msg.msg )
+		return;	// skipping meta slack msgs
+
+	if ( msg.serv.toLowerCase() == opts.serv.toLowerCase() &&
+	     msg.to.toLowerCase() == opts.to.toLowerCase() ) {
+
+		var xServMsg = "["+msg.serv+"] "+msg.from+"->"+
+				msg.to+": "+msg.msg;
+
+		process.send( { type: "chat",
+				to: initiatorMsg.to,
+				serv: initiatorMsg.serv,
+				msg: xServMsg } );
 	}
 };
 
@@ -63,6 +78,12 @@ process.on( "message", function ( msg ) {
 	    message = msg.msg || "";
 
 	console.log( msg, from + ' => ' + to + ': ' + message );
+
+	var tailKey = msg.serv.toLowerCase() + ":" +
+		      msg.to.toLowerCase();
+
+	if ( activeTrails[ tailKey ] )
+		transMessage( msg, activeTrails[ tailKey ] );
 
 	if ( message && message.match && message.match( CMD_REGEX ) ) {
 
