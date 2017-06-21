@@ -9,7 +9,7 @@
     "minimist": "^1.2.0",
     "pigeonkeeper": "^0.10.11",
     "ttystudio": "0.0.16",
-    "twitter": "^1.7.1",
+    "twit": "^2.2.5",
     "vantage": "^1.7.0"
   }
 }
