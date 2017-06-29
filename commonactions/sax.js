@@ -41,15 +41,31 @@ var commands = {
 
 		var tailKey = opts.serv.toLowerCase() + ":" +
 			      opts.to.toLowerCase();
+		var tailMsg = "Tailing ";
 
 		if ( !activeTrails[ tailKey ] ) {
 
 			activeTrails[ tailKey ] = { initiatorMsg: initiatorMsg,
 						    opts: opts };
-		} else if ( activeTrails[ tailKey ] && opts.kill ) {
+			tailMsg += "created."
+
+		} else if ( opts.kill ) {
 
 			delete activeTrails[ tailKey ];
+			tailMsg += "destroyed."
+		
+		} else if ( activeTrails[ tailKey ] ) {
+
+			tailMsg += tailKey.replace(/:/g, "->") + " already exists.";
 		}
+
+		process.send( { type: "chat",
+				to: initiatorMsg.to,
+				serv: initiatorMsg.serv,
+				msg: tailMsg } );
+
+		console.log( activeTrails );
+
 	}
 };
 
@@ -58,32 +74,35 @@ var transMessage = function( msg, config ) {
 	if ( !msg.from || !msg.msg )
 		return;	// skipping meta slack msgs
 
-	if ( msg.serv.toLowerCase() == opts.serv.toLowerCase() &&
-	     msg.to.toLowerCase() == opts.to.toLowerCase() ) {
+	if ( msg.serv.toLowerCase() == config.opts.serv.toLowerCase() &&
+	     msg.to.toLowerCase() == config.opts.to.toLowerCase() ) {
 
 		var xServMsg = "["+msg.serv+"] "+msg.from+"->"+
 				msg.to+": "+msg.msg;
 
 		process.send( { type: "chat",
-				to: initiatorMsg.to,
-				serv: initiatorMsg.serv,
+				to: config.initiatorMsg.to,
+				serv: config.initiatorMsg.serv,
 				msg: xServMsg } );
 	}
 };
 
 process.on( "message", function ( msg ) {
 
+	if ( !msg.serv )
+		return;
+
 	var from = msg.from,
 	    to = msg.to,
 	    message = msg.msg || "";
 
-	console.log( msg, from + ' => ' + to + ': ' + message );
-
 	var tailKey = msg.serv.toLowerCase() + ":" +
 		      msg.to.toLowerCase();
+	
+	var tailConfig = activeTrails[ tailKey ];
 
-	if ( activeTrails[ tailKey ] )
-		transMessage( msg, activeTrails[ tailKey ] );
+	if ( tailConfig )
+		transMessage( msg, tailConfig );
 
 	if ( message && message.match && message.match( CMD_REGEX ) ) {
 
